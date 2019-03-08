@@ -1,5 +1,7 @@
 import numpy as np
 
+from PCNN.components.row import Base, Dummy
+
 class Neuron:
     def __init__(self, **kwargs):
 
@@ -114,16 +116,3 @@ class Neuron:
     def test_run(self):
         pass
 
-
-class Base:
-    def __init__(self, activation):
-        self.activation = activation
-    
-    def iter(self, *args):
-        return self.activation
-
-
-class Dummy:
-    """A class to prevent recursive errors"""
-    def iter(self, *args):
-        pass
