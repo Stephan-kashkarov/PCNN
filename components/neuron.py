@@ -3,10 +3,15 @@ import numpy as np
 class Neuron:
     def __init__(self, **kwargs):
 
+
+        # Organisational Arguments
+        self.row = kwargs['row'] if kwargs['row'] else Dummy()
+        self.prev_row = kwargs['prev_row'] if kwargs['prev_row'] else Dummy()
+
         # Scalar Arguments
         self.n = 0
-        self.i = kwargs['i']
-        self.j = kwargs['j']
+        self.i = kwargs['i'] if kwargs['i'] else Dummy()
+        self.j = kwargs['j'] if kwargs['j'] else Dummy()
 
         # Scalar parameters
         self.af = kwargs['af'] if kwargs['af'] else np.float16(0.2)
@@ -32,19 +37,21 @@ class Neuron:
         self.theta = np.float16(1)
 
     # Linking methods
-    def populate(self, row):
-        link = row.neurons()
+    def populate(self):
+        link = self.prev_row.neurons()
         i = self.i
         j = self.j
         np.put(self.input_neurons, range(0, 9), [
-            [x.run() for x in [link[i-1][j-1], link[i+0][j-1], link[i+1][j-1],]],
-            [x.run() for x in [link[i-1][j+0], Dummy()       , link[i+1][j+0],]],
-            [x.run() for x in [link[i-1][j+1], link[i+0][j+1], link[i+1][j+1],]],
+            [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j-1], link[i+0, j-1], link[i+1, j-1],]],
+            [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j+0], Dummy()       , link[i+1, j+0],]],
+            [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j+1], link[i+0, j+1], link[i+1, j+1],]],
         ])
 
     # Mathematical Methods
     def get_f(self, stimulus):
-        pass
+        decay = np.exp(-(self.af), dtype=np.int8)
+        weighted_feed = np.sum(np.multiply(self.input_neurons, self.feeder_weights))
+        
 
     def get_l(self):
         pass
@@ -52,14 +59,28 @@ class Neuron:
     def get_u(self):
         pass
 
-    def get_y(self):
-        pass
-
     def get_t(self):
         pass
+
+    def get_y(self):
+        self.n += 1
+        pass
+
+    def iter(self, row, n):
+        if n > self.n:
+
+        else:
+            return self.e_act
+
+class Base:
+    def __init__(self, activation):
+        self.activation = activation
+    
+    def iter(self, *args):
+        return self.activation
 
 
 class Dummy:
     """A class to prevent recursive errors"""
-    def run(self):
-        return 0
+    def iter(self, *args):
+        pass
