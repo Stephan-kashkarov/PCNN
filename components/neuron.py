@@ -30,6 +30,7 @@ class Neuron:
         self.feeder_weights = np.empty([3,3], dtype=np.float16)
 
         # Matricies
+        self.stimulus = np.float16(0)
         self.feed = np.float16(0)
         self.link = np.float16(0)
         self.u_act = np.float16(0)
@@ -38,39 +39,81 @@ class Neuron:
 
     # Linking methods
     def populate(self):
-        link = self.prev_row.neurons()
         i = self.i
         j = self.j
-        np.put(self.input_neurons, range(0, 9), [
-            [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j-1], link[i+0, j-1], link[i+1, j-1],]],
-            [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j+0], Dummy()       , link[i+1, j+0],]],
-            [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j+1], link[i+0, j+1], link[i+1, j+1],]],
-        ])
+        if self.prev_row.__class__.__name__ != "Base":
+            link = self.prev_row.neurons()
+            np.put(self.input_neurons, range(0, 9), [
+                [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j-1], link[i+0, j-1], link[i+1, j-1],]],
+                [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j+0], Dummy()       , link[i+1, j+0],]],
+                [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j+1], link[i+0, j+1], link[i+1, j+1],]],
+            ])
+        else:
+            link = self.prev_row.vals()
+            np.put(self.input_neurons, range(0, 9), [
+                [link[i-1, j-1], link[i+0, j-1], link[i+1, j-1],],
+                [link[i-1, j+0], 0             , link[i+1, j+0],],
+                [link[i-1, j+1], link[i+0, j+1], link[i+1, j+1],],
+            ])
+
+    # Monitoring Methods
+    def graph_state(self):
+        pass
+
+    def show_graph(self):
+        pass
 
     # Mathematical Methods
-    def get_f(self, stimulus):
+    def get_f(self):
         decay = np.exp(-(self.af), dtype=np.int8)
-        weighted_feed = np.sum(np.multiply(self.input_neurons, self.feeder_weights))
+        weighted_feed = np.sum(
+            np.multiply(
+                self.input_neurons,
+                self.feeder_weights,
+            )
+        )
+        self.feed = (decay * self.feed) + (self.vf * weighted_feed) + self.stimulus
         
 
     def get_l(self):
-        pass
+        decay = np.exp(-(self.al), dtype=np.int8)
+        weighted_link = np.sum(
+            np.multiply(
+                self.input_neurons,
+                self.linker_weights,
+            )
+        )
+        self.link = (decay * self.link) + (self.vl * weighted_link)
 
     def get_u(self):
-        pass
+        self.get_f()
+        self.get_l()
+        self.u_act = self.feed * (1 + (self.bias * self.link))
 
     def get_t(self):
-        pass
+        decay = np.exp(-(self.at), dtype=np.int8)
+        self.theta = (decay*self.theta) + (self.vt * self.e_act)
 
     def get_y(self):
         self.n += 1
-        pass
+        self.get_u()
+        self.get_t()
+        self.e_act = 1 if self.u_act > self.theta else 0
+        self.graph_state()
 
+
+    # Operational Method
     def iter(self, row, n):
         if n > self.n:
+            self.get_y()
+            if n == self.iter:
+                self.show_graph()
+                return None
+        return self.e_act
+    
+    def test_run(self):
+        pass
 
-        else:
-            return self.e_act
 
 class Base:
     def __init__(self, activation):
