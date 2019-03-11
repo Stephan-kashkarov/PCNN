@@ -1,10 +1,9 @@
 import numpy as np
-
 from PCNN.components.row import Base, Dummy
 
 class Neuron:
-    def __init__(self, **kwargs):
 
+    def __init__(self, **kwargs):
 
         # Organisational Arguments
         self.row = kwargs['row'] if kwargs['row'] else Dummy()
@@ -43,20 +42,12 @@ class Neuron:
     def populate(self):
         i = self.i
         j = self.j
-        if self.prev_row.__class__.__name__ != "Base":
-            link = self.prev_row.neurons()
-            np.put(self.input_neurons, range(0, 9), [
-                [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j-1], link[i+0, j-1], link[i+1, j-1],]],
-                [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j+0], Dummy()       , link[i+1, j+0],]],
-                [x.iter(self.prev_row, self.n - 1) for x in [link[i-1, j+1], link[i+0, j+1], link[i+1, j+1],]],
-            ])
-        else:
-            link = self.prev_row.vals()
-            np.put(self.input_neurons, range(0, 9), [
-                [link[i-1, j-1], link[i+0, j-1], link[i+1, j-1],],
-                [link[i-1, j+0], 0             , link[i+1, j+0],],
-                [link[i-1, j+1], link[i+0, j+1], link[i+1, j+1],],
-            ])
+        k = [i-1, i, i+1]
+        l = [j-1, j, j+1]
+        for x in k:
+            for y in l:
+                self.input_neurons[x, y] = self.prev_row.neuron_dict[y, x]
+        self.input_neurons[i, j] = 0
 
     # Monitoring Methods
     def graph_state(self):
