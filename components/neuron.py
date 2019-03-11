@@ -1,5 +1,6 @@
 import numpy as np
 from PCNN.components.row import Base, Dummy
+from matplotlib import pyplot as plot
 
 class Neuron:
 
@@ -35,8 +36,9 @@ class Neuron:
         self.feed = np.float16(0)
         self.link = np.float16(0)
         self.u_act = np.float16(0)
-        self.e_act = np.float16(0)
+        self.activation = np.float16(0)
         self.theta = np.float16(1)
+        self.plot = 
 
     # Linking methods
     def populate(self):
@@ -56,44 +58,7 @@ class Neuron:
     def show_graph(self):
         pass
 
-    # Mathematical Methods
-    def get_f(self):
-        decay = np.exp(-(self.af), dtype=np.int8)
-        weighted_feed = np.sum(
-            np.multiply(
-                self.input_neurons,
-                self.feeder_weights,
-            )
-        )
-        self.feed = (decay * self.feed) + (self.vf * weighted_feed) + self.stimulus
-        
-
-    def get_l(self):
-        decay = np.exp(-(self.al), dtype=np.int8)
-        weighted_link = np.sum(
-            np.multiply(
-                self.input_neurons,
-                self.linker_weights,
-            )
-        )
-        self.link = (decay * self.link) + (self.vl * weighted_link)
-
-    def get_u(self):
-        self.get_f()
-        self.get_l()
-        self.u_act = self.feed * (1 + (self.bias * self.link))
-
-    def get_t(self):
-        theta_decay = np.exp(-(self.at), dtype=np.int8)
-        self.theta = (decay*self.theta) + (self.vt * self.e_act)
-
-    def get_y(self):
-        self.n += 1
-        self.get_u()
-        self.get_t()
-        self.e_act = 1 if self.u_act > self.theta else 0
-        self.graph_state()
-
+    # Mathematical Method
     def calculate(self):
         self.populate()
         link_decay = np.exp(-(self.al), dtype=np.int8)
@@ -103,20 +68,20 @@ class Neuron:
         weighted_link = np.sum(np.multiply(self.input_neurons,self.linker_weights))
         self.feed = (feed_decay * self.feed) + (self.vf * weighted_feed) + self.stimulus
         self.link = (link_decay * self.link) + (self.vl * weighted_link)
-        self.theta = (theta_decay*self.theta) + (self.vt * self.e_act)
+        self.theta = (theta_decay*self.theta) + (self.vt * self.activation)
         self.u_act = self.feed * (1 + (self.bias * self.link))
-        self.e_act = 1 if self.u_act > self.theta else 0
-        return self.e_act
+        self.activation = 1 if self.u_act > self.theta else 0
+        self.n += 1
+        return self.activation
 
 
     # Operational Method
     def iter(self, row, n):
-        if n > self.n:
-            self.get_y()
-            if n == self.iter:
-                self.show_graph()
-                return None
-        return self.e_act
+        if self.n >= n:
+            return self.activation
+        else:
+            while n != self.n:
+                yield self.calculate() # gives value of every calculation from self.n to n
     
     def test_run(self):
         pass
