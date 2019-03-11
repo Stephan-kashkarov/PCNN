@@ -84,7 +84,7 @@ class Neuron:
         self.u_act = self.feed * (1 + (self.bias * self.link))
 
     def get_t(self):
-        decay = np.exp(-(self.at), dtype=np.int8)
+        theta_decay = np.exp(-(self.at), dtype=np.int8)
         self.theta = (decay*self.theta) + (self.vt * self.e_act)
 
     def get_y(self):
@@ -93,6 +93,20 @@ class Neuron:
         self.get_t()
         self.e_act = 1 if self.u_act > self.theta else 0
         self.graph_state()
+
+    def calculate(self):
+        self.populate()
+        link_decay = np.exp(-(self.al), dtype=np.int8)
+        feed_decay = np.exp(-(self.af), dtype=np.int8)
+        theta_decay = np.exp(-(self.at), dtype=np.int8)
+        weighted_feed = np.sum(np.multiply(self.input_neurons,self.feeder_weights))
+        weighted_link = np.sum(np.multiply(self.input_neurons,self.linker_weights))
+        self.feed = (feed_decay * self.feed) + (self.vf * weighted_feed) + self.stimulus
+        self.link = (link_decay * self.link) + (self.vl * weighted_link)
+        self.theta = (theta_decay*self.theta) + (self.vt * self.e_act)
+        self.u_act = self.feed * (1 + (self.bias * self.link))
+        self.e_act = 1 if self.u_act > self.theta else 0
+        return self.e_act
 
 
     # Operational Method
