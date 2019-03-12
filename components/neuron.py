@@ -69,13 +69,6 @@ class Neuron:
                 self.input_neurons[x, y] = self.prev_row.neuron_dict[y, x]
         self.input_neurons[i, j] = 0
 
-    # Monitoring Methods
-    def graph_state(self):
-        pass
-
-    def show_graph(self):
-        pass
-
     # Mathematical Method
     def calculate(self):
         self.populate()
