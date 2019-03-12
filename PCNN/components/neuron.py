@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from PCNN.components.row import Base, Dummy
+from PCNN.components.dummy import Dummy, Dummy_row
 
 
 class Grapher:
@@ -21,8 +21,7 @@ class Grapher:
     def show(self):
         plt.cla()
         for label, data in self.vals.items():
-            if len(data) != self.x[-1]:
-                print(f"ugh, {label} wasnt collected correctly {self.x}, {data}")
+            if len(data) != self.x[-1]: # error prevention
                 continue
             plt.plot(self.x, data, "-+", label=label)
         plt.legend()
@@ -140,23 +139,8 @@ class Neuron:
             self.calculate()
             return self.pulse(n) # gives value of every calculation from self.n to n
     
-class Dummy_row:
 
-    def __init__(self):
-        self.neuron_arr = np.array(
-            [
-                np.random.random_sample(3),
-                np.random.random_sample(3),
-                np.random.random_sample(3),
-            ],
-            dtype=np.float16
-        )
-        print(f"neuron array is {self.neuron_arr}")
-    
-    def vals(self, x, y):
-        return self.neuron_arr[x, y] + 4 * (np.random.ranf() - 0.2)
-
-def test_run():
+def test_neuron():
     while True:
         n = Neuron(plot=True, i=1, j=1)
         n.pulse(n.iterations)
