@@ -13,10 +13,5 @@ class Dummy_row:
         )
         print(f"neuron array is {self.neuron_arr}")
 
-    def vals(self, x, y):
-        return self.neuron_arr[x, y] + 4 * (np.random.ranf() - 0.2)
-
-
-class Dummy:
-    def iter(self, *args):
-        pass
+    def vals(self, y, x):
+        return self.neuron_arr[y, x] + 4 * (np.random.ranf() - 0.2)

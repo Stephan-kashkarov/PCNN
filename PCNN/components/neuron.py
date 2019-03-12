@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from PCNN.components.dummy import Dummy, Dummy_row
+from PCNN.components.dummy import Dummy_row
 
 
 class Grapher:
