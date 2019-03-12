@@ -33,14 +33,19 @@ class Neuron:
     def __init__(self, **kwargs):
 
         # Organisational Arguments
-        print(f"Row {kwargs.get('row')}, prev_row: {kwargs.get('prev_row')}")
-        self.row = kwargs.get('row', Dummy_row("row"))
-        self.prev_row = kwargs.get('prev_row', Dummy_row("prev_row"))
+        self.row = kwargs.get('row')
+        self.prev_row = kwargs.get('prev_row')
+        
+        if self.row == None:
+            self.row = Dummy_row()
+        if self.prev_row == None:
+            self.prev_row = Dummy_row()
 
         # Scalar Arguments
         self.n = 0
         self.i = kwargs.get('i')
         self.j = kwargs.get('j')
+
         # Scalar parameters
         self.yx = kwargs.get('yf', np.float16(0.7))
         self.af = kwargs.get('af', np.float16(0.2))
@@ -50,28 +55,28 @@ class Neuron:
         self.at = kwargs.get('at', np.float16(0.2))
         self.vt = kwargs.get('vt', np.float16(6))
         self.bias = kwargs.get('bias', np.float16(0.5))
-        self.iterations = kwargs.get('it', 40)
+        self.iterations = kwargs.get('it', 100)
 
         # Matrix parameters
         self.input_neurons = np.empty([3, 3], dtype=np.float16)
         self.linker_weights = np.array(
             [
-                [x - 0.2 for x in np.random.random_sample(3)],
-                [x - 0.2 for x in np.random.random_sample(3)],
-                [x - 0.2 for x in np.random.random_sample(3)],
+                [(x - 0.1) for x in np.random.random_sample(3)],
+                [(x - 0.1) for x in np.random.random_sample(3)],
+                [(x - 0.1) for x in np.random.random_sample(3)],
             ],
             dtype=np.float16
         )
         self.feeder_weights = np.array(
             [
-                [0.5 * (x - 0.1) for x in np.random.random_sample(3)],
-                [0.5 * (x - 0.1) for x in np.random.random_sample(3)],
-                [0.5 * (x - 0.1) for x in np.random.random_sample(3)],
+                [(x - 0.1) for x in np.random.random_sample(3)],
+                [(x - 0.1) for x in np.random.random_sample(3)],
+                [(x - 0.1) for x in np.random.random_sample(3)],
             ],
             dtype=np.float16
         )
-        # print(self.linker_weights)
-        # print(self.feeder_weights)
+        print(self.linker_weights)
+        print(self.feeder_weights)
 
         # Matricies
         self.stimulus = 10 * self.prev_row.vals(self.i, self.j)

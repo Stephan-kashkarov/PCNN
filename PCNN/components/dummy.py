@@ -2,9 +2,7 @@ import numpy as np
 
 class Dummy_row:
 
-    def __init__(self, string=None):
-        if string:
-            print(string)
+    def __init__(self, **kwargs):
         self.neuron_arr = np.array(
             [
                 np.random.random_sample(3),
@@ -13,7 +11,7 @@ class Dummy_row:
             ],
             dtype=np.float16
         )
-        print(f"neuron array is {self.neuron_arr}")
 
     def vals(self, y, x):
-        return self.neuron_arr[y, x] + 4 * (np.random.ranf() - 0.2)
+        val = self.neuron_arr[y, x] + 4 * (np.random.ranf() - 0.2)
+        return  val
