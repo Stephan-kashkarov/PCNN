@@ -33,24 +33,24 @@ class Neuron:
     def __init__(self, **kwargs):
 
         # Organisational Arguments
-        keys = kwargs.keys()
-        self.row = kwargs['row'] if 'row' in keys else Dummy_row()
-        self.prev_row = kwargs['prev_row'] if 'prev_row' in keys else Dummy_row()
+        print(f"Row {kwargs.get('row')}, prev_row: {kwargs.get('prev_row')}")
+        self.row = kwargs.get('row', Dummy_row("row"))
+        self.prev_row = kwargs.get('prev_row', Dummy_row("prev_row"))
 
         # Scalar Arguments
         self.n = 0
         self.i = kwargs.get('i')
         self.j = kwargs.get('j')
         # Scalar parameters
-        self.yx = kwargs['yf'] if 'yf' in keys else np.float16(0.7)
-        self.af = kwargs['af'] if 'af' in keys else np.float16(0.2)
-        self.vf = kwargs['vf'] if 'vf' in keys else np.float16(0.1)
-        self.al = kwargs['al'] if 'al' in keys else np.float16(0.5)
-        self.vl = kwargs['vl'] if 'vl' in keys else np.float16(0.2)
-        self.at = kwargs['at'] if 'at' in keys else np.float16(0.2)
-        self.vt = kwargs['vt'] if 'vt' in keys else np.float16(6)
-        self.bias = kwargs['bias'] if 'bias' in keys else np.float16(0.5)
-        self.iterations = kwargs['it'] if 'it' in keys else 40
+        self.yx = kwargs.get('yf', np.float16(0.7))
+        self.af = kwargs.get('af', np.float16(0.2))
+        self.vf = kwargs.get('vf', np.float16(0.1))
+        self.al = kwargs.get('al', np.float16(0.5))
+        self.vl = kwargs.get('vl', np.float16(0.2))
+        self.at = kwargs.get('at', np.float16(0.2))
+        self.vt = kwargs.get('vt', np.float16(6))
+        self.bias = kwargs.get('bias', np.float16(0.5))
+        self.iterations = kwargs.get('it', 40)
 
         # Matrix parameters
         self.input_neurons = np.empty([3, 3], dtype=np.float16)
@@ -80,7 +80,7 @@ class Neuron:
         self.u_act = np.float16(0)
         self.activation_internal = np.float16(0)
         self.theta = np.float16(1)
-        self.plot_bool = kwargs['plot'] if 'plot' in keys else False
+        self.plot_bool = kwargs.get('plot', False)
         self.plotter = Grapher(
             "feed", 
             "link", 

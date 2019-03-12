@@ -2,7 +2,9 @@ import numpy as np
 
 class Dummy_row:
 
-    def __init__(self):
+    def __init__(self, string=None):
+        if string:
+            print(string)
         self.neuron_arr = np.array(
             [
                 np.random.random_sample(3),
