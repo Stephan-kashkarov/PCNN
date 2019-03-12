@@ -1,6 +1,23 @@
 import numpy as np
+from matplotlib import pyplot as plt
 from PCNN.components.row import Base, Dummy
-from matplotlib import pyplot as plot
+
+class Grapher:
+    
+    def __init__(self, *args):
+        self.vals = {str(key): [] for key in args}
+        self.x = [0]
+    
+    def graph(self, **kwargs):
+        for key, val in kwargs.items():
+            self.vals[key].append(val)
+
+    def show(self):
+        plt.cla()
+        for label, data in self.vals.items():
+            plt.plot(self.x, data, label=label)
+        plt.show()
+
 
 class Neuron:
 
@@ -38,7 +55,8 @@ class Neuron:
         self.u_act = np.float16(0)
         self.activation = np.float16(0)
         self.theta = np.float16(1)
-        self.plot = 
+        self.plot_bool = kwargs['plot'] if kwargs['plot'] else False
+        self.plotter = Grapher("stimulus", "feed", "link", "u_act", "theta", "activation")
 
     # Linking methods
     def populate(self):
@@ -72,6 +90,8 @@ class Neuron:
         self.u_act = self.feed * (1 + (self.bias * self.link))
         self.activation = 1 if self.u_act > self.theta else 0
         self.n += 1
+        if self.plot_bool:
+            self.plotter()
         return self.activation
 
 
@@ -80,7 +100,7 @@ class Neuron:
         if self.n >= n:
             return self.activation
         else:
-            while n != self.n:
+            while n >= self.n:
                 yield self.calculate() # gives value of every calculation from self.n to n
     
     def test_run(self):
