@@ -6,11 +6,15 @@ class Grapher:
     
     def __init__(self, *args):
         self.vals = {str(key): [] for key in args}
-        self.x = [0]
+        self.x = []
     
     def graph(self, **kwargs):
         for key, val in kwargs.items():
             self.vals[key].append(val)
+        if self.x:
+            self.x.append(self.x[-1] + 1)
+        else:
+            self.x.append(0)
 
     def show(self):
         plt.cla()
@@ -84,7 +88,13 @@ class Neuron:
         self.activation = 1 if self.u_act > self.theta else 0
         self.n += 1
         if self.plot_bool:
-            self.plotter()
+            self.plotter.graph(
+                feed=self.feed,
+                link=self.link,
+                theta=self.theta,
+                u_act=self.u_act,
+                activation=self.activation,
+            )
         return self.activation
 
 
@@ -95,6 +105,8 @@ class Neuron:
         else:
             while n >= self.n:
                 yield self.calculate() # gives value of every calculation from self.n to n
+            if self.plot_bool:
+                self.plotter.show()
     
     def test_run(self):
         pass
