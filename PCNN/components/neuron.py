@@ -11,15 +11,20 @@ class Grapher:
     def graph(self, **kwargs):
         for key, val in kwargs.items():
             self.vals[key].append(val)
-        if self.x:
+        if len(self.x):
             self.x.append(self.x[-1] + 1)
         else:
-            self.x.append(0)
+            self.x.append(1)
 
     def show(self):
         plt.cla()
+        print(self.x)
         for label, data in self.vals.items():
+            if len(data) != self.x[-1]:
+                print(f"ugh, {label} wasnt collected correctly {self.x}, {data}")
+                continue
             plt.plot(self.x, data, label=label)
+        plt.legend()
         plt.show()
 
 
@@ -34,8 +39,8 @@ class Neuron:
 
         # Scalar Arguments
         self.n = 0
-        self.i = kwargs['i'].get()
-        self.j = kwargs['j'].get()
+        self.i = kwargs.get('i')
+        self.j = kwargs.get('j')
         # Scalar parameters
         self.af = kwargs['af'] if 'af' in keys else np.float16(0.2)
         self.vf = kwargs['vf'] if 'vf' in keys else np.float16(0.1)
@@ -44,22 +49,24 @@ class Neuron:
         self.at = kwargs['at'] if 'at' in keys else np.float16(0.2)
         self.vt = kwargs['vt'] if 'vt' in keys else np.float16(6)
         self.bias = kwargs['bias'] if 'bias' in keys else np.float16(0.5)
-        self.iterations = kwargs['it'] if 'it' in keys else np.float16(40)
+        self.iterations = kwargs['it'] if 'it' in keys else 30
 
         # Matrix parameters
         self.input_neurons = np.empty([3,3], dtype=np.int8)
         self.linker_weights = np.empty([3,3], dtype=np.float16)
+        print(self.linker_weights)
         self.feeder_weights = np.empty([3,3], dtype=np.float16)
+        print(self.feeder_weights)
 
         # Matricies
-        self.stimulus = np.float16(0)
+        self.stimulus = np.float16(0.8)
         self.feed = np.float16(0)
         self.link = np.float16(0)
         self.u_act = np.float16(0)
         self.activation = np.float16(0)
         self.theta = np.float16(1)
         self.plot_bool = kwargs['plot'] if 'plot' in keys else False
-        self.plotter = Grapher("stimulus", "feed", "link", "u_act", "theta", "activation")
+        self.plotter = Grapher("feed", "link", "u_act", "theta", "activation")
 
     # Linking methods
     def populate(self):
@@ -75,9 +82,9 @@ class Neuron:
     # Mathematical Method
     def calculate(self):
         self.populate()
-        link_decay = np.exp(-(self.al), dtype=np.int8)
-        feed_decay = np.exp(-(self.af), dtype=np.int8)
-        theta_decay = np.exp(-(self.at), dtype=np.int8)
+        link_decay = np.exp(-(self.al))
+        feed_decay = np.exp(-(self.af))
+        theta_decay = np.exp(-(self.at))
         weighted_feed = np.sum(np.multiply(self.input_neurons,self.feeder_weights))
         weighted_link = np.sum(np.multiply(self.input_neurons,self.linker_weights))
         self.feed = (feed_decay * self.feed) + (self.vf * weighted_feed) + self.stimulus
@@ -98,14 +105,16 @@ class Neuron:
 
 
     # Operational Method
-    def iter(self, row, n):
+    def pulse(self, row, n):
+        print("Hi!")
         if self.n >= n:
-            return self.activation
-        else:
-            while n >= self.n:
-                yield self.calculate() # gives value of every calculation from self.n to n
+            print(f"Result state reached {self.n}")
             if self.plot_bool:
                 self.plotter.show()
+            return self.activation
+        else:
+            self.calculate()
+            return self.pulse(row, n) # gives value of every calculation from self.n to n
     
 class Dummy_row:
 
@@ -113,8 +122,11 @@ class Dummy_row:
         self.neuron_arr = np.ones((3, 3), dtype=np.int8)
 
 def test_run():
-    n = Neuron(plot=True)
+    n = Neuron(plot=True, i=1, j=1)
     r = Dummy_row()
-    n.iter(r, n.iterations)
+    print(r.neuron_arr)
+    print(n.iterations)
+    print(n.n)
+    n.pulse(r, n.iterations)
     print("done")
 
