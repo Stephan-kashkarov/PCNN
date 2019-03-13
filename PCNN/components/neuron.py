@@ -106,8 +106,6 @@ class Neuron:
                     val = 0
                 np.put(self.input_neurons, [y, x], val)
         self.stimulus = self.input_neurons[i, j]
-        print(i, j)
-        print(self.input_neurons)
         self.input_neurons[i, j] = 0
         # print(self.input_neurons)
         # print(self.prev_row.vals(x, y))
@@ -139,9 +137,9 @@ class Neuron:
 
 
     # Operational Method
-    def pulse(self, n, graph=False):
+    def pulse(self, n):
         if self.n >= n:
-            if self.plot_bool and graph:
+            if self.plot_bool:
                 self.plotter.show()
             return self.activation_internal
         else:

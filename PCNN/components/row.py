@@ -10,11 +10,11 @@ def manually_fill_arr(size_x, size_y, obj, **kwargs):
         arr.append(arr_x)
     return np.array(arr, dtype=object)
 
-def map_arr_iterate(arr, graph=False):
+def map_arr_iterate(arr):
     a = arr.reshape(-1)
     for val in a:
         print(val.i, val.j)
-        yield val.pulse(val.n + 1, graph=graph)
+        yield val.pulse(val.n + 1)
 
 
 class Row:
@@ -37,7 +37,7 @@ class Row:
             self.neurons[y, x].plot_bool = True
             # print(self.neurons[y, x].plot_bool)
 
-    def iterate(self, graph=False):
+    def iterate(self):
         self.values = np.array(list(map_arr_iterate(self.neurons)), dtype=np.float16)
         return self.values
     
@@ -64,10 +64,12 @@ class Base_row:
         return self.arr[y, x]
 
 def test_row():
-    br = Base_row(shape=(9, 9))
-    print(f"Base image\n{br.arr}")
-    r = Row(9, 9, plot=True)
-    for i in range(40):
-        r.iterate()
-    print(r.iterate())
+    while True:
+        n = Neuron()
+        br = Base_row(shape=(9, 9))
+        print(f"Base image\n{br.arr}")
+        r = Row(9, 9, plot=True)
+        for i in range(10):
+            r.iterate()
+        [print(x) for x in r.iterate()]
     # print(r.neurons)
