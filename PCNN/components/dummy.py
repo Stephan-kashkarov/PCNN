@@ -14,4 +14,4 @@ class Dummy_row:
 
     def vals(self, y, x):
         val = self.neuron_arr[y, x] + 4 * (np.random.ranf() - 0.2)
-        return  val
+        return val

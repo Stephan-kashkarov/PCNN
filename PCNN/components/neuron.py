@@ -41,6 +41,8 @@ class Neuron:
         if self.prev_row == None:
             self.prev_row = Dummy_row()
 
+        print(f"prevous row is:\n{self.prev_row.arr}")
+
         # Scalar Arguments
         self.n = 0
         self.i = kwargs.get('i')
@@ -57,22 +59,18 @@ class Neuron:
         self.bias = kwargs.get('bias', np.float16(0.5))
         self.iterations = kwargs.get('it', 100)
 
+        self.size_y, self.size_x = kwargs.get("shape", (3, 3))
         # Matrix parameters
-        self.input_neurons = np.empty([3, 3], dtype=np.float16)
+        self.input_neurons = np.empty(
+            (self.size_x, self.size_y),
+            dtype=np.float16
+        )
         self.linker_weights = np.array(
-            [
-                [(x - 0.1) for x in np.random.random_sample(3)],
-                [(x - 0.1) for x in np.random.random_sample(3)],
-                [(x - 0.1) for x in np.random.random_sample(3)],
-            ],
+            [[np.random.random_sample(self.size_x)] for h in range(self.size_y)],
             dtype=np.float16
         )
         self.feeder_weights = np.array(
-            [
-                [(x - 0.1) for x in np.random.random_sample(3)],
-                [(x - 0.1) for x in np.random.random_sample(3)],
-                [(x - 0.1) for x in np.random.random_sample(3)],
-            ],
+            [[np.random.random_sample(self.size_x)] for h in range(self.size_y)],
             dtype=np.float16
         )
         print(self.linker_weights)
@@ -102,8 +100,14 @@ class Neuron:
         l = [j-1, j, j+1]
         for x in k:
             for y in l:
-                np.put(self.input_neurons, [y, x], self.prev_row.vals(y, x))
-        self.stimulus = self.prev_row.neuron_arr[i, j]
+                if x in range(self.prev_row.size_x) and y in range(self.prev_row.size_y):
+                    val = self.prev_row.vals(y, x)
+                else:
+                    val = 0
+                np.put(self.input_neurons, [y, x], val)
+        self.stimulus = self.input_neurons[i, j]
+        print(i, j)
+        print(self.input_neurons)
         self.input_neurons[i, j] = 0
         # print(self.input_neurons)
         # print(self.prev_row.vals(x, y))
@@ -135,9 +139,9 @@ class Neuron:
 
 
     # Operational Method
-    def pulse(self, n):
+    def pulse(self, n, graph=False):
         if self.n >= n:
-            if self.plot_bool:
+            if self.plot_bool and graph:
                 self.plotter.show()
             return self.activation_internal
         else:
@@ -148,5 +152,5 @@ class Neuron:
 def test_neuron():
     while True:
         n = Neuron(plot=True, i=1, j=1)
-        n.pulse(n.iterations)
+        n.pulse(n.iterations, graph=True)
     print("done")

@@ -3,4 +3,4 @@
 from PCNN.components.neuron import test_neuron
 from PCNN.components.row import test_row
 
-test_neuron()
+test_row()
