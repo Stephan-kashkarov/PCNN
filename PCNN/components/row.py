@@ -1,5 +1,8 @@
 import numpy as np
-from PCNN.components.neuron import Neuron
+try:
+    from PCNN.components.neuron import Neuron
+except ImportError:
+    from neuron import Neuron
 
 def manually_fill_arr(size_x, size_y, obj, **kwargs):
     arr = []
@@ -25,7 +28,7 @@ class Row:
                 dtype=np.float16
             )
         )
-        self.neurons = manually_fill_arr(x, y, Neuron, prev_row=self.prev_row, row=self, shape=(y, x))
+        self.neurons = manually_fill_arr(x, y, Neuron, prev_row=self.prev_row, row=self)
         self.values = np.zeros((y, x), dtype=np.float16)
         if kwargs.get("plot"):
             coords = kwargs.get("plot_coords")

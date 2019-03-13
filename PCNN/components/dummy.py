@@ -3,6 +3,9 @@ import numpy as np
 class Dummy_row:
 
     def __init__(self, **kwargs):
+        self.size_x = 3
+        self.size_y = 3
+        self.shape = (3, 3)
         self.arr = np.array(
             [
                 np.random.random_sample(3),

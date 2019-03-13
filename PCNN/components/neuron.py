@@ -52,32 +52,30 @@ class Neuron:
         self.yx = kwargs.get('yf', np.float16(0.7))
         self.af = kwargs.get('af', np.float16(0.2))
         self.vf = kwargs.get('vf', np.float16(0.1))
-        self.al = kwargs.get('al', np.float16(0.5))
-        self.vl = kwargs.get('vl', np.float16(0.2))
+        self.al = kwargs.get('al', np.float16(0.2))
+        self.vl = kwargs.get('vl', np.float16(0.1))
         self.at = kwargs.get('at', np.float16(0.2))
-        self.vt = kwargs.get('vt', np.float16(6))
-        self.bias = kwargs.get('bias', np.float16(0.5))
-        self.iterations = kwargs.get('it', 100)
-
-        self.size_y, self.size_x = kwargs.get("shape", (3, 3))
+        self.vt = kwargs.get('vt', np.float16(8))
+        self.bias = kwargs.get('bias', np.float16(0.2))
+        self.iterations = kwargs.get('it', 40)
         # Matrix parameters
         self.input_neurons = np.empty(
-            (self.size_x, self.size_y),
+            (3, 3),
             dtype=np.float16
         )
-        self.linker_weights = np.array(
-            [[np.random.random_sample(self.size_x)] for h in range(self.size_y)],
+        self.linker_weights = kwargs.get("linker_weights", np.array(
+            [[np.random.random_sample(3)] for h in range(3)],
             dtype=np.float16
-        )
-        self.feeder_weights = np.array(
-            [[np.random.random_sample(self.size_x)] for h in range(self.size_y)],
+        ))
+        self.feeder_weights = kwargs.get("feeder_weights", np.array(
+            [[np.random.random_sample(3)] for h in range(3)],
             dtype=np.float16
-        )
+        ))
         print(self.linker_weights)
         print(self.feeder_weights)
 
         # Matricies
-        self.stimulus = 10 * self.prev_row.vals(self.i, self.j)
+        self.stimulus = self.prev_row.vals(self.i, self.j)
         self.feed = np.float16(0)
         self.link = np.float16(0)
         self.u_act = np.float16(0)
@@ -106,22 +104,32 @@ class Neuron:
                     val = 0
                 np.put(self.input_neurons, [y, x], val)
         self.stimulus = self.input_neurons[i, j]
-        self.input_neurons[i, j] = 0
+        np.put(self.input_neurons, [i, j], 0)
         # print(self.input_neurons)
         # print(self.prev_row.vals(x, y))
 
     # Mathematical Method
     def calculate(self):
+        print(f"Calculating neuron: {self.i} {self.j}:")
         self.populate()
         link_decay = np.exp(-(self.al))
         feed_decay = np.exp(-(self.af))
         theta_decay = np.exp(-(self.at))
-        weighted_feed = np.sum(np.multiply(self.input_neurons,self.feeder_weights))
+        weighted_feed = np.sum(
+            np.multiply(self.input_neurons,self.feeder_weights)
+        )
         weighted_link = np.sum(np.multiply(self.input_neurons,self.linker_weights))
+        print(f"Feed = ({feed_decay} x {self.feed}) + ({self.vf} x {weighted_feed}) + {self.stimulus}", end=" ")
         self.feed = (feed_decay * self.feed) + (self.vf * weighted_feed) + self.stimulus
+        print(f"= {self.feed}")
+        print(f"Link = ({link_decay} x {self.link}) + ({self.vl} x {weighted_link})", end=" ")
         self.link = (link_decay * self.link) + (self.vl * weighted_link)
-        self.theta = (theta_decay * self.theta) + (self.vt * self.activation_internal)
+        print(f"= {self.link}")
         self.u_act = self.feed * (1 + (self.bias * self.link))
+        print(f"U = {self.feed} x (1 + ({self.bias} x {self.link})) = {self.u_act}")
+        print(f"Theta = ({theta_decay} x {self.theta}) + ({self.vt} x {self.activation_internal})", end=" ")
+        self.theta = (theta_decay * self.theta) + (self.vt * self.activation_internal)
+        print(f"= {self.theta}")
         self.activation_internal = 1 if self.u_act > self.theta else 0
         self.n += 1
         activation = (1 / (1 + np.exp(self.yx * (self.u_act - self.theta))))
@@ -150,5 +158,5 @@ class Neuron:
 def test_neuron():
     while True:
         n = Neuron(plot=True, i=1, j=1)
-        n.pulse(n.iterations, graph=True)
+        n.pulse(n.iterations)
     print("done")
