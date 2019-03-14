@@ -36,6 +36,7 @@ class Neuron:
         self.row = kwargs.get('row')
         self.prev_row = kwargs.get('prev_row')
         
+        self.x, self.y = kwargs.get("shape", (3, 3))
         if self.row == None:
             self.row = Dummy_row()
         if self.prev_row == None:
@@ -60,15 +61,15 @@ class Neuron:
         self.iterations = kwargs.get('it', 40)
         # Matrix parameters
         self.input_neurons = np.empty(
-            (3, 3),
+            (self.y, self.x),
             dtype=np.float16
         )
         self.linker_weights = kwargs.get("linker_weights", np.array(
-            [[np.random.random_sample(3)] for h in range(3)],
+            [[np.random.random_sample(self.x)] for h in range(self.y)],
             dtype=np.float16
         ))
         self.feeder_weights = kwargs.get("feeder_weights", np.array(
-            [[np.random.random_sample(3)] for h in range(3)],
+            [[np.random.random_sample(self.x)] for h in range(self.y)],
             dtype=np.float16
         ))
         print(self.linker_weights)
@@ -94,8 +95,8 @@ class Neuron:
     def populate(self):
         i = self.i
         j = self.j
-        l = [i-1, i, i+1]
-        k = [j-1, j, j+1]
+        l = range(i - int((self.y / 2)), (i - int((self.y/2))) + 1)
+        k = range(j - int((self.x / 2)), (j - int((self.x/2))) + 1)
         for x in k:
             for y in l:
                 if x in range(self.prev_row.size_x) and y in range(self.prev_row.size_y):

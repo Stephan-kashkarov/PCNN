@@ -25,7 +25,30 @@ class Row:
                 dtype=np.float16
             )
         )
-        self.neurons = manually_fill_arr(x, y, Neuron, prev_row=self.prev_row, row=self)
+        self.neurons = manually_fill_arr(
+            x, y, Neuron,
+            prev_row=self.prev_row,
+            row=self,
+            shape=(4, 4),
+            linker_weights=np.array(
+                [
+                   [0.2, 0.2, 0.2, 0.2],
+                   [0.2, 0.7, 0.7, 0.2],
+                   [0.2, 0.7, 0.7, 0.2],
+                   [0.4, 0.5, 0.5, 0.4],
+                ],
+                dtype=np.float16
+            ),
+            feeder_weights=np.array(
+                [
+                    [0.1, 0.1, 0.1, 0.1],
+                    [0.1, 0.4, 0.4, 0.1],
+                    [0.1, 0.4, 0.4, 0.1],
+                    [0.2, 0.3, 0.3, 0.2],
+                ],
+                dtype=np.float16
+            ),
+        )
         self.values = np.zeros((y, x), dtype=np.float16)
         if kwargs.get("plot"):
             coords = kwargs.get("plot_coords")
