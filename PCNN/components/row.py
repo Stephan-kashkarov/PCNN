@@ -1,8 +1,6 @@
 import numpy as np
-try:
-    from PCNN.components.neuron import Neuron
-except ImportError:
-    from neuron import Neuron
+from PIL import Image
+from PCNN.components.neuron import Neuron
 
 def manually_fill_arr(size_x, size_y, obj, **kwargs):
     arr = []
