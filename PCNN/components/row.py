@@ -53,20 +53,21 @@ class Row:
 class Base_row:
 
     def __init__(self, **kwargs):
-        arr = kwargs.get('arr')
         dtype = kwargs.get("dtype", np.float16)
         self.size_y, self.size_x = kwargs.get('shape')
-        if arr:
-            self.arr = np.array(arr, dtype=dtype)
-        else:
-            self.arr = np.array(
+        self.arr = kwargs.get(
+            'arr',
+            np.array(
                 [np.random.random_sample(self.size_x)
                  for h in range(self.size_y)],
                 dtype=dtype
             )
+        )
 
     def vals(self, y, x):
         return self.arr[y, x]
+
+
 
 def test_row():
     # while True:

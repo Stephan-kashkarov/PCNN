@@ -20,10 +20,13 @@ def visualise_random(iter=10):
 
 def visualise_input(filename, iter=10):
     inp = Image.open(f"input/{filename}").convert('1')
-    size = list(inp.size)
-    size[0] -= 1
-    size[1] -= 1
-    base = Base_row(shape=size, arr=inp.getdata())
+    data = np.array([np.float64(x)/255 for x in inp.getdata()], dtype=np.float16).reshape(inp.size[0], inp.size[1])
+    base = Base_row(shape=inp.size, arr=data)
+
+
+
+
+
     row = Row(inp.size[0], inp.size[1], plot=False, prev_row=base)
     imgs = []
     gif = Image.new("1", (row.y, row.x))
