@@ -41,7 +41,7 @@ class Neuron:
         if self.prev_row == None:
             self.prev_row = Dummy_row()
 
-        print(f"prevous row is:\n{self.prev_row.arr}")
+        # print(f"prevous row is:\n{self.prev_row.arr}")
 
         # Scalar Arguments
         self.n = 0
@@ -94,23 +94,23 @@ class Neuron:
     def populate(self):
         i = self.i
         j = self.j
-        k = [i-1, i, i+1]
-        l = [j-1, j, j+1]
+        l = [i-1, i, i+1]
+        k = [j-1, j, j+1]
         for x in k:
             for y in l:
                 if x in range(self.prev_row.size_x) and y in range(self.prev_row.size_y):
                     val = self.prev_row.vals(y, x)
                 else:
                     val = 0
-                np.put(self.input_neurons, [y, x], val)
-        self.stimulus = self.input_neurons[i, j]
-        np.put(self.input_neurons, [i, j], 0)
+                np.put(self.input_neurons, [l.index(y), k.index(x)], val)
+        self.stimulus = self.input_neurons[1, 1]
+        np.put(self.input_neurons, [1, 1], 0)
         # print(self.input_neurons)
         # print(self.prev_row.vals(x, y))
 
     # Mathematical Method
     def calculate(self):
-        print(f"Calculating neuron: {self.i} {self.j}:")
+        # print(f"Calculating neuron: {self.i} {self.j}:")
         self.populate()
         link_decay = np.exp(-(self.al))
         feed_decay = np.exp(-(self.af))
@@ -119,29 +119,29 @@ class Neuron:
             np.multiply(self.input_neurons,self.feeder_weights)
         )
         weighted_link = np.sum(np.multiply(self.input_neurons,self.linker_weights))
-        print(f"Feed = ({feed_decay} x {self.feed}) + ({self.vf} x {weighted_feed}) + {self.stimulus}", end=" ")
+        # print(f"Feed = ({feed_decay} x {self.feed}) + ({self.vf} x {weighted_feed}) + {self.stimulus}", end=" ")
         self.feed = (feed_decay * self.feed) + (self.vf * weighted_feed) + self.stimulus
-        print(f"= {self.feed}")
-        print(f"Link = ({link_decay} x {self.link}) + ({self.vl} x {weighted_link})", end=" ")
+        # print(f"= {self.feed}")
+        # print(f"Link = ({link_decay} x {self.link}) + ({self.vl} x {weighted_link})", end=" ")
         self.link = (link_decay * self.link) + (self.vl * weighted_link)
-        print(f"= {self.link}")
+        # print(f"= {self.link}")
         self.u_act = self.feed * (1 + (self.bias * self.link))
-        print(f"U = {self.feed} x (1 + ({self.bias} x {self.link})) = {self.u_act}")
-        print(f"Theta = ({theta_decay} x {self.theta}) + ({self.vt} x {self.activation_internal})", end=" ")
+        # print(f"U = {self.feed} x (1 + ({self.bias} x {self.link})) = {self.u_act}")
+        # print(f"Theta = ({theta_decay} x {self.theta}) + ({self.vt} x {self.activation_internal})", end=" ")
         self.theta = (theta_decay * self.theta) + (self.vt * self.activation_internal)
-        print(f"= {self.theta}")
+        # print(f"= {self.theta}")
         self.activation_internal = 1 if self.u_act > self.theta else 0
         self.n += 1
-        activation = (1 / (1 + np.exp(self.yx * (self.u_act - self.theta))))
+        self.activation = (1 / (1 + np.exp(self.yx * (self.u_act - self.theta))))
         if self.plot_bool:
             self.plotter.graph(
                 feed=self.feed,
                 link=self.link,
                 theta=self.theta,
                 u_act=self.u_act,
-                activation=activation,
+                activation=self.activation,
             )
-        return activation
+        return self.activation
 
 
     # Operational Method
@@ -149,7 +149,7 @@ class Neuron:
         if self.n >= n:
             if self.plot_bool:
                 self.plotter.show()
-            return self.activation_internal
+            return self.activation
         else:
             self.calculate()
             return self.pulse(n) # gives value of every calculation from self.n to n
