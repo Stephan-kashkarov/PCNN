@@ -1,5 +1,4 @@
 import numpy as np
-from PIL import Image
 from PCNN.components.neuron import Neuron
 
 def manually_fill_arr(size_x, size_y, obj, **kwargs):
@@ -56,11 +55,10 @@ class Base_row:
     def __init__(self, **kwargs):
         arr = kwargs.get('arr')
         dtype = kwargs.get("dtype", np.float16)
+        self.size_y, self.size_x = kwargs.get('shape')
         if arr:
             self.arr = np.array(arr, dtype=dtype)
-            self.size_y, self.size_x = self.arr.shape
         else:
-            self.size_y, self.size_x = kwargs.get('shape')
             self.arr = np.array(
                 [np.random.random_sample(self.size_x)
                  for h in range(self.size_y)],

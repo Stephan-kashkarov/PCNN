@@ -115,21 +115,12 @@ class Neuron:
         link_decay = np.exp(-(self.al))
         feed_decay = np.exp(-(self.af))
         theta_decay = np.exp(-(self.at))
-        weighted_feed = np.sum(
-            np.multiply(self.input_neurons,self.feeder_weights)
-        )
+        weighted_feed = np.sum(np.multiply(self.input_neurons,self.feeder_weights))
         weighted_link = np.sum(np.multiply(self.input_neurons,self.linker_weights))
-        # print(f"Feed = ({feed_decay} x {self.feed}) + ({self.vf} x {weighted_feed}) + {self.stimulus}", end=" ")
         self.feed = (feed_decay * self.feed) + (self.vf * weighted_feed) + self.stimulus
-        # print(f"= {self.feed}")
-        # print(f"Link = ({link_decay} x {self.link}) + ({self.vl} x {weighted_link})", end=" ")
         self.link = (link_decay * self.link) + (self.vl * weighted_link)
-        # print(f"= {self.link}")
         self.u_act = self.feed * (1 + (self.bias * self.link))
-        # print(f"U = {self.feed} x (1 + ({self.bias} x {self.link})) = {self.u_act}")
-        # print(f"Theta = ({theta_decay} x {self.theta}) + ({self.vt} x {self.activation_internal})", end=" ")
         self.theta = (theta_decay * self.theta) + (self.vt * self.activation_internal)
-        # print(f"= {self.theta}")
         self.activation_internal = 1 if self.u_act > self.theta else 0
         self.n += 1
         self.activation = (1 / (1 + np.exp(self.yx * (self.u_act - self.theta))))
