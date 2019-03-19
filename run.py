@@ -1,8 +1,13 @@
-# from PCNN.components.network import PCNN
-# from PCNN.components.settings import init_scalar_variables
 from PCNN.components.visualisation import visualise_random, visualise_input
 from PCNN.components.neuron import test_neuron
 from PCNN.components.row import test_row
 import random
 
-visualise_input(f"frames/seq_{random.randint(1, 2000):06d}.jpg", 50, 100)
+
+input_str = f"Data/trainingSet/5/img_51.jpg"
+print(input_str)
+visualise_input(input_str, 40, 100)
+
+
+# test_neuron()
+

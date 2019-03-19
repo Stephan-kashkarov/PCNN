@@ -29,25 +29,27 @@ class Row:
             x, y, Neuron,
             prev_row=self.prev_row,
             row=self,
-            shape=(4, 4),
-            linker_weights=np.array(
-                [
-                   [0.2, 0.2, 0.2, 0.2],
-                   [0.2, 0.7, 0.7, 0.2],
-                   [0.2, 0.7, 0.7, 0.2],
-                   [0.4, 0.5, 0.5, 0.4],
-                ],
-                dtype=np.float16
-            ),
-            feeder_weights=np.array(
-                [
-                    [0.1, 0.1, 0.1, 0.1],
-                    [0.1, 0.4, 0.4, 0.1],
-                    [0.1, 0.4, 0.4, 0.1],
-                    [0.2, 0.3, 0.3, 0.2],
-                ],
-                dtype=np.float16
-            ),
+            shape=(5, 5),
+            # linker_weights=np.array(
+            #     [
+            #        [0.5, 0.5, 0.2, 0.5, 0.5],
+            #        [0.6, 0.6, 0.6, 0.6, 0.6],
+            #        [0.5, 0.5, 0.4, 0.5, 0.5],
+            #        [0.5, 0.5, 0.5, 0.5, 0.5],
+            #        [0.5, 0.5, 0.4, 0.3, 0.3],
+            #     ],
+            #     dtype=np.float16
+            # ),
+            # feeder_weights=np.array(
+            #     [
+            #         [0.1, 0.1, 0.1, 0.1, 0.1],
+            #         [0.3, 0.3, 0.2, 0.2, 0.2],
+            #         [0.1, 0.1, 0.3, 0.1, 0.1],
+            #         [0.1, 0.1, 0.3, 0.1, 0.1],
+            #         [0.1, 0.1, 0.3, 0.1, 0.1],
+            #     ],
+            #     dtype=np.float16
+            # ),
         )
         self.values = np.zeros((y, x), dtype=np.float16)
         if kwargs.get("plot"):
@@ -68,6 +70,7 @@ class Row:
                 dtype=np.float16
             ).reshape(self.y, self.x)
             n -= 1
+
         return self.values
     
     def vals(self, i, j):

@@ -37,6 +37,7 @@ class Neuron:
         self.prev_row = kwargs.get('prev_row')
         
         self.x, self.y = kwargs.get("shape", (3, 3))
+
         if self.row == None:
             self.row = Dummy_row()
         if self.prev_row == None:
@@ -95,16 +96,16 @@ class Neuron:
     def populate(self):
         i = self.i
         j = self.j
-        l = range(i - int((self.y / 2)), (i - int((self.y/2))) + 1)
-        k = range(j - int((self.x / 2)), (j - int((self.x/2))) + 1)
+        l = range(i - int((self.y / 2)), (i - int((self.y / 2))) + 1)
+        k = range(j - int((self.x / 2)), (j - int((self.x / 2))) + 1)
         for x in k:
             for y in l:
                 if x in range(self.prev_row.size_x) and y in range(self.prev_row.size_y):
-                    val = self.prev_row.vals(y, x)
+                    val = self.row.vals(y, x)
                 else:
                     val = 0
                 np.put(self.input_neurons, [l.index(y), k.index(x)], val)
-        self.stimulus = self.input_neurons[1, 1]
+        self.stimulus = self.prev_row.vals(i, j)
         np.put(self.input_neurons, [1, 1], 0)
         # print(self.input_neurons)
         # print(self.prev_row.vals(x, y))
