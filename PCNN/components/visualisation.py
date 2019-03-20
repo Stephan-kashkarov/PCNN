@@ -23,8 +23,16 @@ def visualise_random(iter=10):
 
 def visualise_input(filename, iter=10, fpms=1000):
     inp = Image.open(f"input/{filename}").convert('1')
-    data = np.array([np.float64(x)/255 for x in inp.getdata()], dtype=np.float16).reshape(inp.size[0], inp.size[1])
-    base = Base_row(shape=inp.size, arr=data)
+    base = Base_row(
+        shape=inp.size,
+        arr=np.array(
+            [np.float64(x)/255 for x in inp.getdata()],
+            dtype=np.float16,
+        ).reshape(
+            inp.size[0],
+            inp.size[1],
+        ),
+    )
     row = Row(inp.size[0], inp.size[1], plot=False, prev_row=base)
     arrs = []
     imgs = []
