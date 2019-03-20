@@ -29,13 +29,12 @@ def visualise_input(filename, iter=10, fpms=1000):
     arrs = []
     imgs = []
     gif = Image.new("1", (row.y, row.x))
+    heatmap = np.zeros((row.y, row.x), dtype=np.int32)
+    heatmap = heatmap.flatten()
     for i in range(iter):
         arr, img = gen_frame(row)
         imgs.append(img)
         arrs.append(arr)
-    heatmap = np.zeros((row.y, row.x), dtype=np.int32)
-    heatmap = heatmap.flatten()
-    for arr in arrs:
         for idx, val in enumerate(arr.flatten()):
             heatmap[idx] += val
     heatmap = heatmap.reshape((row.y, row.x))
