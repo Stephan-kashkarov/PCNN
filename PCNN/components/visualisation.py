@@ -33,24 +33,22 @@ def visualise_input(filename, iter=10, fpms=1000):
         arr, img = gen_frame(row)
         imgs.append(img)
         arrs.append(arr)
-    heatmap = np.zeros((inp.size[0], inp.size[1]), dtype=np.uint8).flatten()
-    for index, slide in enumerate(arr):
-        current = slide.flatten()
-        prev = arr[index - 1].flatten()
-        for i in range(len(current)):
-            if prev[i] < current[i]:
-                heatmap[i] += 1
-    heatmap = heatmap.reshape(inp.size[0], inp.size[1])
+    heatmap = np.zeros((row.y, row.x), dtype=np.int32)
+    heatmap = heatmap.flatten()
+    for arr in arrs:
+        for idx, val in enumerate(arr.flatten()):
+            heatmap[idx] += val
+    heatmap = heatmap.reshape((row.y, row.x))
     print(heatmap)
     heatmap = np.interp(heatmap, [0, np.max(heatmap)], [0, 255])
     print(heatmap)
-    heatmap = Image.fromarray(heatmap, "1")
+    heatmap = Image.fromarray(heatmap, "L")
     heatmap.save("output/heatmap.png")
     gif.save(
         "output/pulses.gif",
         save_all=True,
         append_images=imgs,
-        duration=fpms,
+        duration=fpms, 
     )
     
 
