@@ -6,8 +6,8 @@ import random
 
 input_str = f"Data/trainingSet/5/img_51.jpg"
 print(input_str)
-visualise_input(input_str, 40, 500)
+visualise_input(input_str, 40, 100)
 
 
-# test_neuron()
+#test_neuron()
 

@@ -45,21 +45,22 @@ class Neuron:
 
         # print(f"prevous row is:\n{self.prev_row.arr}")
 
-        # Scalar Arguments
+        # Constant Arguments
         self.n = 0
         self.i = kwargs.get('i')
         self.j = kwargs.get('j')
 
-        # Scalar parameters
+        # Constant parameters
         self.yx = kwargs.get('yf', np.float16(0.7))
         self.af = kwargs.get('af', np.float16(0.2))
         self.vf = kwargs.get('vf', np.float16(0.1))
         self.al = kwargs.get('al', np.float16(0.2))
         self.vl = kwargs.get('vl', np.float16(0.1))
         self.at = kwargs.get('at', np.float16(0.2))
-        self.vt = kwargs.get('vt', np.float16(8))
+        self.vt = kwargs.get('vt', np.float16(10))
         self.bias = kwargs.get('bias', np.float16(0.2))
         self.iterations = kwargs.get('it', 40)
+
         # Matrix parameters
         self.input_neurons = np.empty(
             (self.y, self.x),
@@ -73,6 +74,8 @@ class Neuron:
             [[np.random.random_sample(self.x)] for h in range(self.y)],
             dtype=np.float16
         ))
+
+        #! Required to ensure values are copied?
         print(self.linker_weights)
         print(self.feeder_weights)
 
@@ -112,7 +115,6 @@ class Neuron:
 
     # Mathematical Method
     def calculate(self):
-        # print(f"Calculating neuron: {self.i} {self.j}:")
         self.populate()
         link_decay = np.exp(-(self.al))
         feed_decay = np.exp(-(self.af))
