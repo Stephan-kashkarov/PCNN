@@ -4,10 +4,9 @@ from PCNN.components.row import test_row
 import random
 
 
-input_str = f"Data/trainingSet/5/img_51.jpg"
-print(input_str)
-visualise_input(input_str, 40, 100)
+input_str = f"man1.jpg"
+visualise_input(input_str, 40, 50)
 
 
-#test_neuron()
+# test_neuron()
 

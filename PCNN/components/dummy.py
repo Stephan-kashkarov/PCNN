@@ -16,5 +16,5 @@ class Dummy_row:
         )
 
     def vals(self, y, x):
-        val = self.arr[y, x] + 4 * (np.random.ranf() - 0.2)
+        val = self.arr[y, x] + (np.random.ranf() - 0.3)
         return val
