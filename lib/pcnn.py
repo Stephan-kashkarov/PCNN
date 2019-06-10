@@ -1,5 +1,4 @@
 import numpy as np
-import tensorflow as tf
 import matplotlib.pyplot as plt
 
 class PCNN:
@@ -24,16 +23,15 @@ class PCNN:
         }
 
     def __call__(self, x, iterations=10):
-
-        assert isinstance(x, np.array)
-        assert x.shape == self.input_shape
+        print(self.input_shape, x.shape)
+        # assert x.shape == self.input_shape
         
-        for neuron in self.neurons:
+        for neuron in self.neurons.flatten():
             his = neuron(x)
             yield his[0]
             self.record(his)
         for i in range(iterations - 1):
-            for neuron in self.neurons:
+            for neuron in self.neurons.flatten():
                 his = neuron(self.neurons.activation)
                 yield his[0]
                 self.record(his)
@@ -73,8 +71,8 @@ class Neuron:
         self.linker_weights = np.random.normal(size=(self.kernal_shape[0], self.kernal_shape[1]))
         self.feeder_weights = np.random.normal(size=(self.kernal_shape[0], self.kernal_shape[1]))
 
-        self.linker_weights[self.kernal_shape[1]/2, self.kernal_shape[0]/2] = 0
-        self.feeder_weights[self.kernal_shape[1]/2, self.kernal_shape[0]/2] = 0
+        self.linker_weights[int(self.kernal_shape[1]/2), int(self.kernal_shape[0]/2)] = 0
+        self.feeder_weights[int(self.kernal_shape[1]/2), int(self.kernal_shape[0]/2)] = 0
 
 
     def __call__(self, x):
