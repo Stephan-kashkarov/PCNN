@@ -3,9 +3,38 @@ import tensorflow as tf
 
 class PCNN:
     def __init__(self, **kwargs):
-        pass
+        
+        self.input_shape = kwargs.get('input_shape', (3, 3))
+        self.input_size = self.input_shape[0] * self.input_shape[1]
+
+        # Neuron matrixes
+        self.neurons = np.array(
+            [Neuron(**kwargs.get("neuron_params", {})) for x in range(self.input_size)],
+            dtype=np.object
+        ).reshape(self.input_shape)
+
+        # Graphing
+        self.history = {
+            'activation': [],
+            'feed': [],
+            'link': [],
+            'u_activation': [],
+            'theta': [],
+        }
 
     def __call__(self, x, iterations=10):
+        for neuron in self.neurons:
+            his = neuron(x)
+            self.record(his)
+        for i in range(iterations - 1):
+            for neuron in self.neurons:
+                his = neuron(self.neurons.activation)
+                self.record(his)
+
+    def record(self, **kwargs):
+        pass
+
+    def show(self, **kwargs):
         pass
 
 class Neuron:
@@ -43,8 +72,8 @@ class Neuron:
         self.feeder_weights[self.kernal_shape[1]/2, self.kernal_shape[0]/2] = 0
 
 
-    def __call__(self, x, layer):
-        layer_inputs = layer.actiations[
+    def __call__(self, x):
+        layer_inputs = x[
             self.j - self.kernal_shape[1]/2:self.j + (self.kernal_shape[1]/2)+1,
             self.i - self.kernal_shape[0]/2:self.i + (self.kernal_shape[0]/2)+1,
         ].reshape(self.kernal_shape)
@@ -52,9 +81,8 @@ class Neuron:
         feed_weights = self.vf * np.matmul(self.feeder_weights, layer_inputs)
         link_weights = self.vl * np.matmul(self.linker_weights, layer_inputs)
         self.feed = (np.exp(-self.af) * self.feed) + feed_weights
-        self.link = (np.exp(-self.al) * self.link) + link_weights + layer.actiations[self.j, self.i]
+        self.link = (np.exp(-self.al) * self.link) + link_weights + x[self.j, self.i]
         self.u_activation = self.feed * (1 + (self.link) * self.bias)
         self.theta = (np.exp(-self.at)*self.theta) + self.vt * self.activation
         self.activation = 1 if self.u_activation > self.theta else 0
         return [self.activation, (self.feed, self.link, self.u_activation, self.theta)]
-        
