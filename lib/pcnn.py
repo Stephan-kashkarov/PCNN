@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 class PCNN:
     def __init__(self, **kwargs):
-        
+        self.n = 0
         self.input_shape = kwargs.get('input_shape', (3, 3))
         self.input_size = self.input_shape[0] * self.input_shape[1]
 
@@ -13,32 +13,43 @@ class PCNN:
             dtype=np.object
         ).reshape(self.input_shape)
 
+        # wow this is messy, sorry!
+        for index, neuron in np.ndenumerate(self.neurons):
+            neuron.i = index[1]
+            neuron.j = index[0]
+
+        self.activation = [np.empty(self.input_shape),]
+
         # Graphing
-        self.history = {
-            'theta': [],
-            'u_activation': [],
-            'link': [],
-            'feed': [],
-            'activation': [],
-        }
+        self.history = np.array([
+            {
+                'feed': [],
+                'link': [],
+                'u_activation': [],
+                'theta': [],
+            } for neuron in range(self.input_size)
+        ]).reshape(self.input_shape)
 
     def __call__(self, x, iterations=10):
-        print(self.input_shape, x.shape)
-        # assert x.shape == self.input_shape
+        assert x.shape == self.input_shape
         
         for neuron in self.neurons.flatten():
             his = neuron(x)
-            yield his[0]
-            self.record(his)
+            self.record(neuron.i, neuron.j, his)
+        self.activation.append(np.empty(self.input_shape))
+        yield self.activation[-1]
         for i in range(iterations - 1):
             for neuron in self.neurons.flatten():
-                his = neuron(self.neurons.activation)
-                yield his[0]
-                self.record(his)
+                his = neuron(self.activation[-1])
+                self.record(neuron.i, neuron.j, his)
+            self.activation.append(np.empty(self.input_shape))
+            yield self.activation[-1]
 
-    def record(self, his):
-        for key in self.history.keys():
-            self.history[key].append(his.pop())
+    def record(self, x, y, his):
+        self.activation[-1][y, x] = his[0]
+        for key in self.history[y, x].keys():
+            self.history[y, x][key].append(his[1].pop())
+        
 
 class Neuron:
     def __init__(self, **kwargs):
@@ -46,7 +57,7 @@ class Neuron:
         # Constant Arguments
         self.i = kwargs.get('i')
         self.j = kwargs.get('j')
-        self.kernal_shape = kwargs.get('kernal_shape', (3, 3))
+        self.kernal_shape = [3, 3]
         self.kernal_size = self.kernal_shape[0] * self.kernal_shape[1]
 
 
@@ -75,20 +86,24 @@ class Neuron:
         self.feeder_weights[int(self.kernal_shape[1]/2), int(self.kernal_shape[0]/2)] = 0
 
 
-    def __call__(self, x):
+    def __call__(self, data):
         
-        layer_inputs = x[
-            self.j - self.kernal_shape[1]/2:self.j + (self.kernal_shape[1]/2)+1,
-            self.i - self.kernal_shape[0]/2:self.i + (self.kernal_shape[0]/2)+1,
-        ].reshape(self.kernal_shape)
+        inputs = []
+        for y in range(self.j - 1, self.j + 2):
+            for x in range(self.i - 1, self.i+2):
+                try:
+                    inputs.append(data[y, x])
+                except:
+                    inputs.append(0)
+        layer_inputs = np.array(inputs).reshape(3, 3)
         
-        feed_weights = self.vf * np.matmul(self.feeder_weights, layer_inputs)
-        link_weights = self.vl * np.matmul(self.linker_weights, layer_inputs)
+        feed_weights = self.vf * np.sum(np.multiply(self.feeder_weights, layer_inputs))
+        link_weights = self.vl * np.sum(np.multiply(self.linker_weights, layer_inputs))
 
         self.feed = (np.exp(-self.af) * self.feed) + feed_weights
-        self.link = (np.exp(-self.al) * self.link) + link_weights + x[self.j, self.i]
-        self.u_activation = self.feed * (1 + (self.link) * self.bias)
+        self.link = (np.exp(-self.al) * self.link) + link_weights + data[self.j, self.i]
+        self.u_activation = self.feed * (1 + (self.link * self.bias))
         self.theta = (np.exp(-self.at)*self.theta) + self.vt * self.activation
         self.activation = 1 if self.u_activation > self.theta else 0
 
-        return [self.activation, self.feed, self.link, self.u_activation, self.theta]
+        return [self.activation, [self.feed, self.link, self.u_activation, self.theta]]
